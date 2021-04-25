@@ -1,0 +1,100 @@
+{extend name="common/base"}
+
+{block name="title"}
+日志管理
+{/block}
+
+{block name="css"}
+{load href="/static/index/js/jconfirm/jquery-confirm.min.css" /}
+{/block}
+
+{block name="content"}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header bg-primary">
+                <h4>日志管理列表</h4>
+            </div>
+            
+            <div class="card-body">
+                
+                <div class="modal fade" id="taskDetail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title">任务详情</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="card">
+                                    <div class="card-header bg-primary">
+                                        <h4 id="taskTitle">任务标题</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <p id="taskContent"></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>日志类型</th>
+                            <th>日志信息</th>
+                            <th>时间</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {foreach $list as $key => $val}
+                        <tr>
+                            <td>{$page * 10 - 10 + $key + 1}</td>
+                            <td>
+                                <span class="label label-success">{$val.log_type}</span>
+                            </td>
+                            <td>
+                                {$val.message}
+                            </td>
+                            <td>
+                                {$val.create_time}
+                            </td>
+                        </tr>
+                        {/foreach}
+                        </tbody>
+                    </table>
+                </div>
+                <div id="logsPage"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{load href="/static/index/js/bootstrap-notify.min.js" /}
+{load href="/static/index/js/jconfirm/jquery-confirm.min.js" /}
+{load href="/static/index/js/lightyear.js" /}
+<script>
+    layui.use('laypage', function() {
+        var laypage = layui.laypage;
+
+        laypage.render({
+            elem: 'logsPage',
+            count: {$count},
+            curr: {$page},
+            jump: function(obj, first){
+                //首次不执行
+                if(!first){
+                    window.location.href = '/log?page=' + obj.curr;
+                }
+            }
+        });
+    })
+</script>
+{/block}

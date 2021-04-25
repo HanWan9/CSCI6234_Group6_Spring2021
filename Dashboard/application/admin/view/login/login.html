@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>COVID - 19 Dashboard - login</title>
+    <link rel="icon" href="favicon.ico" type="image/ico">
+    <meta name="keywords" content="COVID - 19 Dashboard">
+    <meta name="description" content="COVID - 19 Dashboard">
+    <meta name="author" content="Leone">
+    {load href="/static/index/css/bootstrap.min.css" /}
+    {load href="/static/index/css/materialdesignicons.min.css" /}
+    {load href="/static/index/css/style.min.css" /}
+    {load href="/static/index/js/jconfirm/jquery-confirm.min.css" /}
+    <style>
+        .lyear-wrapper {
+            position: relative;
+        }
+        .lyear-login {
+            display: flex !important;
+            min-height: 100vh;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        .login-center {
+            background: #fff;
+            min-width: 38.25rem;
+            padding: 2.14286em 3.57143em;
+            border-radius: 5px;
+            margin: 2.85714em 0;
+        }
+        .login-header {
+            margin-bottom: 1.5rem !important;
+        }
+        .login-center .has-feedback.feedback-left .form-control {
+            padding-left: 38px;
+            padding-right: 12px;
+        }
+        .login-center .has-feedback.feedback-left .form-control-feedback {
+            left: 0;
+            right: auto;
+            width: 38px;
+            height: 38px;
+            line-height: 38px;
+            z-index: 4;
+            color: #dcdcdc;
+        }
+        .login-center .has-feedback.feedback-left.row .form-control-feedback {
+            left: 15px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="row lyear-wrapper">
+    <div class="lyear-login">
+        <div class="login-center">
+            <div class="login-header text-center">
+                <h3>COVID - 19 Dashboard - Login</h3>
+            </div>
+            <form action="#!" method="post" id="loginFrom">
+                <div class="form-group has-feedback feedback-left">
+                    <input type="text" placeholder="Please enter email address" autocomplete="off" class="form-control" name="username" id="username" />
+                    <span class="mdi mdi-account form-control-feedback" aria-hidden="true"></span>
+                </div>
+                <div class="form-group has-feedback feedback-left">
+                    <input type="password" placeholder="enter your PIN" class="form-control" id="password" name="password" />
+                    <span class="mdi mdi-lock form-control-feedback" aria-hidden="true"></span>
+                </div>
+                <div class="form-group has-feedback feedback-left row">
+                    <div class="col-xs-7">
+                        <input type="text" name="captcha" autocomplete="off" class="form-control" placeholder="verification code">
+                        <span class="mdi mdi-check-all form-control-feedback" aria-hidden="true"></span>
+                    </div>
+                    <div class="col-xs-5">
+                        <img src="{:url('/verify')}" class="pull-right" id="captcha" style="cursor: pointer;" title="Click the refresh" alt="captcha">
+                    </div>
+                </div>
+                <a href="/register" style="margin-bottom: 10px;display: block">No account? Register now</a>
+                <div class="form-group">
+                    <button class="btn btn-block btn-primary" type="button" onclick="checkLogin()">Login immediately</button>
+                </div>
+            </form>
+            <hr>
+            <footer class="col-sm-12 text-center">
+                <p class="m-b-0">Copyright © 2019 Website Operators. All right reserved</p>
+            </footer>
+        </div>
+    </div>
+</div>
+{load href="/static/index/js/jquery.min.js" /}
+{load href="/static/index/js/bootstrap.min.js" /}
+{load href="/static/index/js/bootstrap-notify.min.js" /}
+{load href="/static/index/js/jconfirm/jquery-confirm.min.js" /}
+{load href="/static/index/js/lightyear.js" /}
+<script type="text/javascript">
+
+    function isNull(value) {
+        var str = value.replace(/(^\s*)|(\s*$)/g, '');
+        return (str == '' || str == undefined || str == null) ? false : true
+    }
+
+    $('#captcha').on('click', function(){
+        $('#captcha').attr('src', "/verify?"+Math.random());
+    })
+
+    function checkLoginData(param) {
+        var obj = {}
+        var isError = true
+        $.each(param, function(key, item) {
+            if( isError ) {
+                switch (item.name) {
+                    case "username":
+                        if ( isNull(item.value) == false ) {
+                            lightyear.notify('Please enter email address！', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+                            isError = false
+                            break
+                        }
+                        obj.username = item.value;
+                        break;
+                    case "password":
+                        if ( isNull(item.value) == false ) {
+                            lightyear.notify('enter your PIN！', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+                            isError = false
+                            break
+                        }
+                        obj.password = item.value;
+                        break;
+                    case "captcha":
+                        if ( isNull(item.value) == false ) {
+                            lightyear.notify('Please enter the verification code！', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+                            isError = false
+                            break
+                        }
+                        obj.captcha = item.value;
+                        break;
+                }
+            } else {
+                return false
+            }
+        })
+        return !isError ? false : obj;
+    }
+    
+    function checkLogin() {
+        var param = $('#loginFrom').serializeArray();
+        var data = checkLoginData(param)
+        if(data === false) {
+            return false
+        }
+        lightyear.loading('show');
+        $.post('/login/checkLogin', data, function(res) {
+            var data = JSON.parse(res)
+            lightyear.loading('hide');
+            if(data.code == 200)
+            {
+                $('#UserModel').modal('hide');
+                lightyear.notify('Login successful, about to jump！', 'success', 3000, 'mdi mdi-emoticon-happy', 'top', 'center');
+                setTimeout(function(){window.location.href = '/'}, 1000)
+            } else {
+                lightyear.notify(data.data, 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+            }
+        }).error(function() {
+            lightyear.notify('The server is abnormal, please contact the administrator', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+            lightyear.loading('hide');
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,317 @@
+{extend name="common/base"}
+
+{block name="title"}
+Calculated Risk
+{/block}
+
+{block name="css"}
+{load href="/static/index/js/jconfirm/jquery-confirm.min.css" /}
+{/block}
+
+{block name="content"}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header bg-primary">
+                <h4>Calculated Risk</h4>
+            </div>
+            
+            <div class="card-toolbar clearfix">
+                <div class="toolbar-btn-action">
+                    
+                    <div class="row">
+                        <div class="col-lg-2 col-md-2 col-sm-3">
+                            <a class="btn btn-primary m-r-5" href="#" data-toggle="modal" data-target="#UserModel">
+                                <i class="mdi mdi-plus"></i>
+                                Add Patient
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="modal fade" id="UserModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="myModalLabel">Add Patient</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="From">
+                                        <div class="form-group">
+                                            <label class="control-label" for="example-select">patient's name</label>
+                                            <select class="form-control" id="example-select" name="example-select" size="1">
+                                                {foreach $userList as $key => $val}
+                                                <option value="{$val.id}">{$val.name}</option>
+                                                {/foreach}
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Whether a cold</label>
+                                            <div class="example-box">
+                                                <label class="lyear-radio radio-inline radio-primary">
+                                                    <input type="radio" name="cold" value="1">
+                                                    <span>Yes</span>
+                                                </label>
+                                                <label class="lyear-radio radio-inline radio-primary">
+                                                    <input type="radio" name="cold" value="0">
+                                                    <span>No</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Whether a fever</label>
+                                            <div class="example-box">
+                                                <label class="lyear-radio radio-inline radio-primary">
+                                                    <input type="radio" name="fever" value="1">
+                                                    <span>Yes</span>
+                                                </label>
+                                                <label class="lyear-radio radio-inline radio-primary">
+                                                    <input type="radio" name="fever" value="0">
+                                                    <span>No</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Whether a cough</label>
+                                            <div class="example-box">
+                                                <label class="lyear-radio radio-inline radio-primary">
+                                                    <input type="radio" name="cough" value="1">
+                                                    <span>Yes</span>
+                                                </label>
+                                                <label class="lyear-radio radio-inline radio-primary">
+                                                    <input type="radio" name="cough" value="0">
+                                                    <span>No</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Whether a shortness of breath</label>
+                                            <div class="example-box">
+                                                <label class="lyear-radio radio-inline radio-primary">
+                                                    <input type="radio" name="breath" value="1">
+                                                    <span>Yes</span>
+                                                </label>
+                                                <label class="lyear-radio radio-inline radio-primary">
+                                                    <input type="radio" name="breath" value="0">
+                                                    <span>No</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Whether a been in contact with infected people</label>
+                                            <div class="example-box">
+                                                <label class="lyear-radio radio-inline radio-primary">
+                                                    <input type="radio" name="contact" value="1">
+                                                    <span>Yes</span>
+                                                </label>
+                                                <label class="lyear-radio radio-inline radio-primary">
+                                                    <input type="radio" name="contact" value="0">
+                                                    <span>No</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Whether a ever been to a public place with a lot of people</label>
+                                            <div class="example-box">
+                                                <label class="lyear-radio radio-inline radio-primary">
+                                                    <input type="radio" name="public" value="1">
+                                                    <span>Yes</span>
+                                                </label>
+                                                <label class="lyear-radio radio-inline radio-primary">
+                                                    <input type="radio" name="public" value="0">
+                                                    <span>No</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary" onClick="saveUser()">Confirm to save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="modal fade" id="ViewDetailed" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="ViewDetailedLabel">Add Patient</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="ViewDetailedFrom">
+                                        <div class="form-group">
+                                            <label class="control-label" for="example-select">patient's name</label>
+                                            <input class="form-control" type="text" id="patientName" readonly>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Whether a cold</label>
+                                            <input class="form-control" type="text" id="cold" readonly>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Whether a fever</label>
+                                            <input class="form-control" type="text" id="fever" readonly>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Whether a cough</label>
+                                            <input class="form-control" type="text" id="cough" readonly>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Whether a shortness of breath</label>
+                                            <input class="form-control" type="text" id="breath" readonly>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Whether a been in contact with infected people</label>
+                                            <input class="form-control" type="text" id="contact" readonly>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Whether a ever been to a public place with a lot of people</label>
+                                            <input class="form-control" type="text" id="public" readonly>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary" onClick="saveUser()">Confirm to save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Number</th>
+                            <th>Patient name</th>
+                            <th>Calculated Risk</th>
+                            <th>Write Time</th>
+                            <th>View detailed</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {foreach $list as $key => $val}
+                        <tr>
+                            <td>{$key+1}</td>
+                            <td>{$val.name}</td>
+                            <td>{$val.type}</td>
+                            <td>{$val.create_time}</td>
+                            <td>
+                                <button class="btn btn-xs btn-primary" onclick="viewDetail({$val.id})">View detailed</button>
+                            </td>
+                        </tr>
+                        {/foreach}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{load href="/static/index/js/bootstrap-notify.min.js" /}
+{load href="/static/index/js/jconfirm/jquery-confirm.min.js" /}
+{load href="/static/index/js/lightyear.js" /}
+<script>
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
+
+        laydate.render({
+            elem: '#clinicTime'
+            ,lang: 'en'
+            ,type: 'datetime'
+        });
+    });
+    
+    window.saveUser = function() {
+        var name = $('#example-select').val();
+        var cold = $('input[name="cold"]:checked').val();
+        var fever = $('input[name="fever"]:checked').val();
+        var cough = $('input[name="cough"]:checked').val();
+        var breath = $('input[name="breath"]:checked').val();
+        var contact = $('input[name="contact"]:checked').val();
+        var public = $('input[name="public"]:checked').val();
+        if ( cold == undefined ) {
+                lightyear.notify('please choose `Whether a cold`', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+                return false;
+        }
+        if ( fever == undefined ) {
+            lightyear.notify('please choose `Whether a fever`', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+            return false;
+        }
+        if ( cough == undefined ) {
+            lightyear.notify('please choose `Whether a cough`', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+            return false;
+        }
+        if ( breath == undefined ) {
+            lightyear.notify('please choose `Whether a shortness of breath`', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+            return false;
+        }
+        if ( contact == undefined ) {
+            lightyear.notify('please choose `Whether a been in contact with infected people`', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+            return false;
+        }
+        if ( public == undefined ) {
+            lightyear.notify('please choose `Whether a ever been to a public place with a lot of people`', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+            return false;
+        }
+        
+        var data = {
+            nameId: name,
+            cold: cold,
+            fever: fever,
+            cough: cough,
+            breath: breath,
+            contact: contact,
+            public: public,
+        }
+        lightyear.loading('show');
+        $.post('/calculatedRisk/save', data, function(res) {
+            var data = JSON.parse(res)
+            lightyear.loading('hide');
+            if(data.code == 200)
+            {
+                $('#UserModel').modal('hide');
+                lightyear.notify('successfully added', 'success', 3000, 'mdi mdi-emoticon-happy', 'top', 'center');
+                setTimeout(function(){window.location.href = '/calculatedRisk'}, 1000)
+            } else {
+                lightyear.notify(data.data, 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+            }
+        }).error(function() {
+            lightyear.notify('The server is abnormal, please contact the administrator', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+            lightyear.loading('hide');
+        });
+    }
+    
+    window.viewDetail = function(workId){
+        lightyear.loading('show');
+        $.post('/calculatedRisk/detail', {workId: workId}, function(res){
+            var data = JSON.parse(res)
+            lightyear.loading('hide');
+            if(data.code == 200)
+            {
+                var result = data.data.result;
+                $('#patientName').val(result.name);
+                $('#cold').val(result.cold);
+                $('#fever').val(result.fever);
+                $('#cough').val(result.cough);
+                $('#breath').val(result.breath);
+                $('#contact').val(result.contact);
+                $('#public').val(result.public);
+                $('#ViewDetailed').modal('show');
+            } else {
+                lightyear.notify(data.data, 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+            }
+        }).error(function() {
+            lightyear.notify('The server is abnormal, please contact the administrator', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+            lightyear.loading('hide');
+        });
+    }
+</script>
+{/block}

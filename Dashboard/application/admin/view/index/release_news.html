@@ -1,0 +1,139 @@
+{extend name="common/base"}
+
+{block name="title"}
+Release my news
+{/block}
+
+{block name="css"}
+{load href="/static/index/js/jconfirm/jquery-confirm.min.css" /}
+{/block}
+
+{block name="content"}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header bg-primary">
+                <h4>Release my news</h4>
+            </div>
+            
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-3" style="margin-bottom: 15px">
+                        <div class="layui-upload-drag" style="width: 100%;{if condition="$theme eq 'black'"}background-color: #222437;{else/}background-color: #fff;{/if}" id="test10">
+                            <i class="layui-icon"></i>
+                            <p>Click Upload Picture</p>
+                            <div class="layui-hide" id="uploadDemoView">
+                                <hr>
+                                <img id="preview" src="" alt="Render after uploading successfully" style="max-width: 196px">
+                            </div>
+                            <input type="hidden" id="imgPath" name="imgPath" value="">
+                        </div>
+                    </div>
+                    <div class="col-lg-9">
+                        <form action="#!" method="post" class="row">
+                            <div class="form-group col-md-12">
+                                <label for="title">News Title</label>
+                                <input type="text" class="form-control" id="title" autocomplete="off" name="title" value="" placeholder="Please enter a title">
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label>News Content</label>
+                                <div id="newsCentent">
+                                
+                                </div>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <button type="button" class="btn btn-primary ajax-post" id="saveInfo" target-form="add-form">Confirm Release</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{load href="/static/index/js/bootstrap-notify.min.js" /}
+{load href="/static/index/js/jconfirm/jquery-confirm.min.js" /}
+{load href="/static/index/js/lightyear.js" /}
+{load href="/static/wangeditor/wangEditor.min.js" /}
+<script>
+    const E = window.wangEditor
+    const editor = new E('#newsCentent')
+    editor.create()
+    $('.placeholder').text('Please enter the text')
+    layui.use(['upload'], function() {
+        var upload = layui.upload
+
+        upload.render({
+            elem: '#test10'
+            ,url: '/releaseNews/upload/covers'
+            ,field: 'covers'
+            ,accept: 'images'
+            ,exts: 'jpg|png|jpeg'
+            ,before: function(obj){
+                lightyear.loading('show');
+            }
+            ,done: function (res){
+                lightyear.loading('hide');
+                if(res.code == 200)
+                {
+                    $('#uploadDemoView').removeClass('layui-hide').addClass('layui-show')
+                    $('#preview').attr('src', res.data.imgPath)
+                    $('#imgPath').val(res.data.imgPath)
+                    lightyear.notify('successfully upload', 'success', 3000, 'mdi mdi-emoticon-happy', 'top', 'center');
+                } else {
+                    lightyear.notify(data.data, 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+                }
+            }
+        });
+    });
+
+    function isNull(value) {
+        var str = value.replace(/(^\s*)|(\s*$)/g, '');
+        return (str == '' || str == undefined || str == null) ? false : true
+    }
+    
+    $('#saveInfo').on('click', function(){
+        var imgPath = $('#imgPath').val()
+        var title = $('input[name="title"]').val();
+        var content = editor.txt.html();
+        if( isNull(imgPath) === false ) {
+            lightyear.notify('Please upload the cover picture！', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+            return false;
+        }
+        if( isNull(title) === false ) {
+            lightyear.notify('Please enter a title！', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+            return false;
+        }
+        if( title.length > 50 ) {
+            lightyear.notify('The header length must not exceed 50！', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+            return false;
+        }
+        if( isNull(content) === false ) {
+            lightyear.notify('Please enter the content of the news！', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+            return false;
+        }
+        var data = {
+            imgPath: imgPath,
+            title: title,
+            content: content
+        }
+        lightyear.loading('show');
+        $.post('/releaseNews/save', data, function(res) {
+            var data = JSON.parse(res)
+            lightyear.loading('hide');
+            if(data.code == 200)
+            {
+                lightyear.notify('successfully added', 'success', 3000, 'mdi mdi-emoticon-happy', 'top', 'center');
+                setTimeout(function(){window.location.href = '/releaseNews'}, 1000)
+            } else {
+                lightyear.notify(data.data, 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+            }
+        }).error(function() {
+            lightyear.notify('The server is abnormal, please contact the administrator', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+            lightyear.loading('hide');
+        });
+    })
+</script>
+{/block}

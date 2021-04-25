@@ -1,0 +1,127 @@
+{extend name="common/base"}
+
+{block name="title"}
+Patients with binding
+{/block}
+
+{block name="css"}
+{load href="/static/index/js/jconfirm/jquery-confirm.min.css" /}
+{/block}
+
+{block name="content"}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header bg-primary">
+                <h4>Patients with binding</h4>
+            </div>
+            
+            <div class="card-toolbar clearfix">
+                <div class="toolbar-btn-action">
+                    
+                    <div class="row">
+                        <div class="col-lg-2 col-md-2 col-sm-3">
+                            <a class="btn btn-primary m-r-5" href="#" data-toggle="modal" data-target="#UserModel">
+                                <i class="mdi mdi-plus"></i>
+                                Add Patient
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="modal fade" id="UserModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="myModalLabel">Add Patient</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="addUserFrom">
+                                        <div class="form-group">
+                                            <label class="control-label">patient's name</label>
+                                            <input type="text" class="form-control" placeholder="Please enter the patient name" autocomplete="off" name="nickname">
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary" onClick="saveUser()">Confirm to save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                </div>
+            </div>
+            
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Number</th>
+                            <th>Patient Name</th>
+                            <th>Binding Time</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {foreach $list as $key => $val}
+                        <tr>
+                            <td>{$key+1}</td>
+                            <td>{$val.name}</td>
+                            <td>{$val.create_time}</td>
+                        </tr>
+                        {/foreach}
+                        </tbody>
+                    </table>
+                </div>
+                <div id="logsPage"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="js"}
+{load href="/static/index/js/bootstrap-notify.min.js" /}
+{load href="/static/index/js/jconfirm/jquery-confirm.min.js" /}
+{load href="/static/index/js/lightyear.js" /}
+<script>
+    layui.use('laypage', function() {
+        var laypage = layui.laypage;
+    })
+
+    function isNull(value) {
+        var str = value.replace(/(^\s*)|(\s*$)/g, '');
+        return (str == '' || str == undefined || str == null) ? false : true
+    }
+    
+    window.saveUser = function() {
+        var name = $('#addUserFrom').find('input[name="nickname"]').val()
+        if( isNull(name) === false ) {
+            lightyear.notify('Please enter the patient name！', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+            return false;
+        }
+        if( name.length > 50 ) {
+            lightyear.notify('The length of the patient name must not exceed 50！', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+            return false;
+        }
+
+        lightyear.loading('show');
+        $.post('/bind/save', {nickname: name}, function(res) {
+            var data = JSON.parse(res)
+            lightyear.loading('hide');
+            if(data.code == 200)
+            {
+                $('#UserModel').modal('hide');
+                lightyear.notify('successfully added', 'success', 3000, 'mdi mdi-emoticon-happy', 'top', 'center');
+                setTimeout(function(){window.location.href = '/bind'}, 1000)
+            } else {
+                lightyear.notify(data.data, 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+            }
+        }).error(function() {
+                lightyear.notify('The server is abnormal, please contact the administrator', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+            lightyear.loading('hide');
+        });
+    }
+</script>
+{/block}

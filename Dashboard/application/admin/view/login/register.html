@@ -1,0 +1,207 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>COVID - 19 Dashboard - Register</title>
+    <link rel="icon" href="favicon.ico" type="image/ico">
+    <meta name="keywords" content="COVID - 19 Dashboard">
+    <meta name="description" content="COVID - 19 Dashboard">
+    <meta name="author" content="Leone">
+    {load href="/static/index/css/bootstrap.min.css" /}
+    {load href="/static/index/css/materialdesignicons.min.css" /}
+    {load href="/static/index/css/style.min.css" /}
+    {load href="/static/index/js/jconfirm/jquery-confirm.min.css" /}
+    <style>
+        .lyear-wrapper {
+            position: relative;
+        }
+        .lyear-login {
+            display: flex !important;
+            min-height: 100vh;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        .login-center {
+            background: #fff;
+            min-width: 38.25rem;
+            padding: 2.14286em 3.57143em;
+            border-radius: 5px;
+            margin: 2.85714em 0;
+        }
+        .login-header {
+            margin-bottom: 1.5rem !important;
+        }
+        .login-center .has-feedback.feedback-left .form-control {
+            padding-left: 38px;
+            padding-right: 12px;
+        }
+        .login-center .has-feedback.feedback-left .form-control-feedback {
+            left: 0;
+            right: auto;
+            width: 38px;
+            height: 38px;
+            line-height: 38px;
+            z-index: 4;
+            color: #dcdcdc;
+        }
+        .login-center .has-feedback.feedback-left.row .form-control-feedback {
+            left: 15px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="row lyear-wrapper">
+    <div class="lyear-login">
+        <div class="login-center">
+            <div class="login-header text-center">
+                <h3>COVID - 19 Dashboard - Register</h3>
+            </div>
+            <form action="#!" method="post" id="registerFrom">
+                <div class="form-group has-feedback feedback-left">
+                    <input type="text" placeholder="Please enter nickname" autocomplete="off" class="form-control" name="nickname" id="nickname" />
+                    <span class="mdi mdi-account form-control-feedback" aria-hidden="true"></span>
+                </div>
+                <div class="form-group has-feedback feedback-left">
+                    <input type="text" placeholder="Please enter email address" autocomplete="off" class="form-control" name="email" id="email" />
+                    <span class="mdi mdi-account form-control-feedback" aria-hidden="true"></span>
+                </div>
+                <div class="form-group has-feedback feedback-left">
+                    <input type="password" placeholder="Enter your password" class="form-control" id="password" name="password" />
+                    <span class="mdi mdi-lock form-control-feedback" aria-hidden="true"></span>
+                </div>
+                <div class="form-group has-feedback feedback-left">
+                    <input type="password" placeholder="Enter your confirmation password again" class="form-control" id="confirm_password " name="confirm_password" />
+                    <span class="mdi mdi-lock form-control-feedback" aria-hidden="true"></span>
+                </div>
+                <a href="/register" style="margin-bottom: 10px;display: block">Already have an account? Click Quick Login</a>
+                <div class="form-group">
+                    <button class="btn btn-block btn-primary" type="button" onclick="checkRegister()">Register immediately</button>
+                </div>
+            </form>
+            <hr>
+            <footer class="col-sm-12 text-center">
+                <p class="m-b-0">Copyright © 2019 Website Operators. All right reserved</p>
+            </footer>
+        </div>
+    </div>
+</div>
+{load href="/static/index/js/jquery.min.js" /}
+{load href="/static/index/js/bootstrap.min.js" /}
+{load href="/static/index/js/bootstrap-notify.min.js" /}
+{load href="/static/index/js/jconfirm/jquery-confirm.min.js" /}
+{load href="/static/index/js/lightyear.js" /}
+<script type="text/javascript">
+
+    function isNull(value) {
+        var str = value.replace(/(^\s*)|(\s*$)/g, '');
+        return (str == '' || str == undefined || str == null) ? false : true
+    }
+
+    function isEmail(value) {
+        return /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/.test(value)
+    }
+
+    $('#captcha').on('click', function(){
+        $('#captcha').attr('src', "/verify?"+Math.random());
+    })
+
+    function checkfrom(param) {
+        var obj = {}
+        var isError = true
+        $.each(param, function(key, item) {
+            if( isError ) {
+                switch (item.name) {
+                    case "nickname":
+                        if ( isNull(item.value) == false ) {
+                            lightyear.notify('Please enter nickname！', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+                            isError = false
+                            break
+                        }
+                        if ( item.value.length > 30 ) {
+                            lightyear.notify('Nicknames cannot be longer than 30！', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+                            isError = false
+                            break
+                        }
+                        obj.nickname = item.value;
+                        break;
+                    case "email":
+                        if ( isNull(item.value) == false ) {
+                            lightyear.notify('Please enter email address！', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+                            isError = false
+                            break
+                        }
+                        if( isEmail(item.value) == false ) {
+                            lightyear.notify('Please enter the correct email format！', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+                            isError = false
+                            break
+                        }
+                        obj.email = item.value;
+                        break;
+                    case "password":
+                        if ( isNull(item.value) == false ) {
+                            lightyear.notify('Enter your PIN！', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+                            isError = false
+                            break
+                        }
+                        if( !/^(?![a-zA-z]+$)(?!\d+$)(?![!@#$%^&*+-.]+$)(?![a-zA-z\d]+$)(?![a-zA-z!@#$%^&*+-.]+$)(?![\d!@#$%^&*]+$)[a-zA-Z\d!@#$%^&*]+$/.test(item.value) ) {
+                            lightyear.notify('The login password is composed of letters + numbers + special characters, and the length is 8 ~ 18 characters！', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+                            isError = false
+                            break
+                        }
+                        if( item.value.length < 8 || item.value.length > 18 ) {
+                            lightyear.notify('The login password is composed of letters + numbers + special characters, and the length is 8 ~ 18 characters！', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+                            isError = false
+                            break
+                        }
+                        obj.password = item.value;
+                        break;
+                    case "confirm_password":
+                        if ( isNull(item.value) == false ) {
+                            lightyear.notify('Please reconfirm your password！', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+                            isError = false
+                            break
+                        }
+                        if( obj.password != item.value ) {
+                            lightyear.notify('The two passwords you entered do not match. Please try again！', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+                            isError = false
+                            break
+                        }
+                        obj.confirm_password = item.value;
+                        break;
+                }
+            } else {
+                return false
+            }
+        })
+        return !isError ? false : obj;
+    }
+
+    function checkRegister() {
+        var param = $('#registerFrom').serializeArray();
+        var data = checkfrom(param)
+        if(data === false) {
+            return false
+        }
+        lightyear.loading('show');
+        $.post('/register/checkRegister', data, function(res) {
+            var data = JSON.parse(res)
+            lightyear.loading('hide');
+            if(data.code == 200)
+            {
+                $('#UserModel').modal('hide');
+                lightyear.notify('Login successful, about to jump！', 'success', 3000, 'mdi mdi-emoticon-happy', 'top', 'center');
+                setTimeout(function(){window.location.href = '/'}, 1000)
+            } else {
+                lightyear.notify(data.data, 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+            }
+        }).error(function() {
+            lightyear.notify('The server is abnormal, please contact the administrator', 'danger', 3000, 'mdi mdi-information', 'top', 'center');
+            lightyear.loading('hide');
+        });
+    }
+</script>
+</body>
+</html>
